@@ -14,11 +14,12 @@ class DatabaseSeeder extends Seeder
 {
     /**
      * Exécute les graines de la base de données (Seeders).
+     * Parfaitement synchronisé avec l'interface Angular de votre binôme.
      */
     public function run(): void
     {
         // ---------------------------------------------------------------------
-        // 1. CRÉATION DES NIVEAUX D'ÉTUDE
+        // 1. NIVEAUX D'ÉTUDE
         // ---------------------------------------------------------------------
         $l1 = Niveau::firstOrCreate(['code' => 'L1'], ['intitule' => 'Licence 1']);
         $l2 = Niveau::firstOrCreate(['code' => 'L2'], ['intitule' => 'Licence 2']);
@@ -27,142 +28,143 @@ class DatabaseSeeder extends Seeder
         $m2 = Niveau::firstOrCreate(['code' => 'M2'], ['intitule' => 'Master 2']);
 
         // ---------------------------------------------------------------------
-        // 2. CRÉATION DES ANNÉES ACADÉMIQUES
+        // 2. ANNÉES ACADÉMIQUES (Format attendu par Angular)
         // ---------------------------------------------------------------------
-        AnneeAcademique::firstOrCreate(
-            ['annee' => '2023-2024'],
-            ['active' => false]
-        );
-        $anneeActive = AnneeAcademique::firstOrCreate(
-            ['annee' => '2024-2025'],
-            ['active' => true]
-        );
-        AnneeAcademique::firstOrCreate(
-            ['annee' => '2025-2026'],
-            ['active' => false]
-        );
+        AnneeAcademique::firstOrCreate(['annee' => '2023 - 2024'], ['active' => false]);
+        $anneeActive = AnneeAcademique::firstOrCreate(['annee' => '2024 - 2025'], ['active' => true]);
+        AnneeAcademique::firstOrCreate(['annee' => '2025 - 2026'], ['active' => false]);
 
         // ---------------------------------------------------------------------
-        // 3. CRÉATION DES FILIÈRES DE U-AUBEN
+        // 3. FILIÈRES EXACTES DU FRONTEND ANGULAR
         // ---------------------------------------------------------------------
-        $filiereGL = Filiere::firstOrCreate(
-            ['code' => 'GL'],
+        $filiereGI = Filiere::firstOrCreate(
+            ['code' => 'GI'],
             [
-                'nom' => 'Génie Logiciel',
-                'description' => 'Conception, développement et maintenance des logiciels et applications.',
+                'nom' => 'Génie Informatique',
+                'description' => 'Développement logiciel, algorithmique et bases de données.',
             ]
         );
 
-        $filiereRIT = Filiere::firstOrCreate(
-            ['code' => 'RIT'],
+        $filiereRS = Filiere::firstOrCreate(
+            ['code' => 'RS'],
             [
-                'nom' => 'Réseaux Informatiques et Télécommunications',
-                'description' => 'Administration des réseaux, infrastructures cloud et télécoms.',
+                'nom' => 'Réseaux et systèmes',
+                'description' => 'Administration des réseaux informatiques et systèmes d’exploitation.',
             ]
         );
 
-        $filiereSEG = Filiere::firstOrCreate(
-            ['code' => 'SEG'],
+        $filiereRT = Filiere::firstOrCreate(
+            ['code' => 'RT'],
             [
-                'nom' => 'Sciences Économiques et de Gestion',
-                'description' => 'Management, comptabilité, finance et administration des entreprises.',
+                'nom' => 'Réseaux et télécommunications',
+                'description' => 'Infrastructures télécoms et réseaux sans fil.',
             ]
         );
 
-        // ---------------------------------------------------------------------
-        // 4. CRÉATION DES MODULES (MATIÈRES)
-        // ---------------------------------------------------------------------
-        // Modules pour Génie Logiciel
-        Module::firstOrCreate(
-            ['code' => 'GL101'],
+        $filiereEI = Filiere::firstOrCreate(
+            ['code' => 'EI'],
             [
-                'nom' => 'Algorithmique & Structures de Données',
-                'filiere_id' => $filiereGL->id,
-                'niveau_id' => $l1->id,
+                'nom' => 'Électricité industrielle',
+                'description' => 'Génie électrique et énergie industrielle.',
             ]
         );
 
-        Module::firstOrCreate(
-            ['code' => 'GL201'],
+        $filiereEEA = Filiere::firstOrCreate(
+            ['code' => 'EEA'],
             [
-                'nom' => 'Développement Web Avancé (PHP/Laravel)',
-                'filiere_id' => $filiereGL->id,
-                'niveau_id' => $l2->id,
-            ]
-        );
-
-        Module::firstOrCreate(
-            ['code' => 'GL202'],
-            [
-                'nom' => 'Bases de Données Relationnelles & SQL',
-                'filiere_id' => $filiereGL->id,
-                'niveau_id' => $l2->id,
-            ]
-        );
-
-        Module::firstOrCreate(
-            ['code' => 'GL301'],
-            [
-                'nom' => 'Génie Logiciel & Modélisation UML',
-                'filiere_id' => $filiereGL->id,
-                'niveau_id' => $l3->id,
-            ]
-        );
-
-        // Module pour Réseaux
-        Module::firstOrCreate(
-            ['code' => 'RIT201'],
-            [
-                'nom' => 'Architecture des Réseaux & Routage IP',
-                'filiere_id' => $filiereRIT->id,
-                'niveau_id' => $l2->id,
+                'nom' => 'Électronique, électrotechnique et automatisme',
+                'description' => 'Systèmes automatisés et électronique appliquée.',
             ]
         );
 
         // ---------------------------------------------------------------------
-        // 5. CRÉATION DES COMPTES UTILISATEURS (MOT DE PASSE COMMUN : password123)
+        // 4. MODULES CORRESPONDANT AU FRONTEND ANGULAR
         // ---------------------------------------------------------------------
-        $motDePasseCommun = Hash::make('password123');
+        Module::firstOrCreate(['code' => 'GI101'], [
+            'nom' => 'Mathématiques appliquées',
+            'filiere_id' => $filiereGI->id,
+            'niveau_id' => $l1->id,
+        ]);
 
-        // Compte Administrateur général
-        User::firstOrCreate(
+        Module::firstOrCreate(['code' => 'GI102'], [
+            'nom' => "Introduction à l'informatique",
+            'filiere_id' => $filiereGI->id,
+            'niveau_id' => $l1->id,
+        ]);
+
+        $modAlgo = Module::firstOrCreate(['code' => 'GI103'], [
+            'nom' => 'Algorithmique',
+            'filiere_id' => $filiereGI->id,
+            'niveau_id' => $l1->id,
+        ]);
+
+        $modBD = Module::firstOrCreate(['code' => 'RS201'], [
+            'nom' => 'Base de données',
+            'filiere_id' => $filiereRS->id,
+            'niveau_id' => $l2->id,
+        ]);
+
+        Module::firstOrCreate(['code' => 'RS202'], [
+            'nom' => 'Systèmes d’exploitation',
+            'filiere_id' => $filiereRS->id,
+            'niveau_id' => $l2->id,
+        ]);
+
+        Module::firstOrCreate(['code' => 'RT101'], [
+            'nom' => 'Réseaux',
+            'filiere_id' => $filiereRT->id,
+            'niveau_id' => $l1->id,
+        ]);
+
+        Module::firstOrCreate(['code' => 'RT102'], [
+            'nom' => 'Télécommunications',
+            'filiere_id' => $filiereRT->id,
+            'niveau_id' => $l1->id,
+        ]);
+
+        Module::firstOrCreate(['code' => 'EI101'], [
+            'nom' => 'Électricité générale',
+            'filiere_id' => $filiereEI->id,
+            'niveau_id' => $l1->id,
+        ]);
+
+        Module::firstOrCreate(['code' => 'EEA101'], [
+            'nom' => 'Électronique de base',
+            'filiere_id' => $filiereEEA->id,
+            'niveau_id' => $l1->id,
+        ]);
+
+        // ---------------------------------------------------------------------
+        // 5. UTILISATEURS DU FRONTEND (Mots de passe : admin12345, chef12345, etudiant123 ou password123)
+        // ---------------------------------------------------------------------
+        // 1. Compte Administrateur (Fatou Ouattara)
+        User::updateOrCreate(
             ['email' => 'admin@u-auben.bf'],
             [
-                'name' => 'Administrateur Général',
-                'password' => $motDePasseCommun,
+                'name' => 'Fatou Ouattara',
+                'password' => Hash::make('admin12345'),
                 'role' => 'admin',
-                'filiere_id' => null, // L'admin a accès à toutes les filières
+                'filiere_id' => null,
             ]
         );
 
-        // Chef de filière : Génie Logiciel
-        User::firstOrCreate(
-            ['email' => 'chef.gl@u-auben.bf'],
+        // 2. Chef de Filière Génie Informatique (Moussa Traoré)
+        User::updateOrCreate(
+            ['email' => 'chef.info@u-auben.bf'],
             [
-                'name' => 'Chef Filière GL',
-                'password' => $motDePasseCommun,
+                'name' => 'Moussa Traoré',
+                'password' => Hash::make('chef12345'),
                 'role' => 'chef_filiere',
-                'filiere_id' => $filiereGL->id, // Rattaché à GL
+                'filiere_id' => $filiereGI->id,
             ]
         );
 
-        // Chef de filière : Réseaux (RIT)
-        User::firstOrCreate(
-            ['email' => 'chef.rit@u-auben.bf'],
-            [
-                'name' => 'Chef Filière RIT',
-                'password' => $motDePasseCommun,
-                'role' => 'chef_filiere',
-                'filiere_id' => $filiereRIT->id, // Rattaché à RIT
-            ]
-        );
-
-        // Étudiant test
-        User::firstOrCreate(
+        // 3. Étudiant (Aïssatou Diallo)
+        User::updateOrCreate(
             ['email' => 'etudiant@u-auben.bf'],
             [
-                'name' => 'Étudiant Test',
-                'password' => $motDePasseCommun,
+                'name' => 'Aïssatou Diallo',
+                'password' => Hash::make('etudiant123'),
                 'role' => 'etudiant',
                 'filiere_id' => null,
             ]
