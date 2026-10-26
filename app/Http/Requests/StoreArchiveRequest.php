@@ -17,6 +17,55 @@ class StoreArchiveRequest extends FormRequest
     }
 
     /**
+     * Préparation des données pour la validation (résolution souple des clés envoyées par Angular).
+     */
+    protected function prepareForValidation(): void
+    {
+        // 1. Résolution du type s'il est en français frontend (ex: 'Épreuve de session')
+        if ($this->has('type')) {
+            $type = strtolower(trim($this->input('type')));
+            if (str_contains($type, 'session') || str_contains($type, 'preuve')) {
+                $this->merge(['type' => 'examen']);
+            } else {
+                $this->merge(['type' => $type]);
+            }
+        }
+
+        // 2. Résolution du module_id depuis le nom du module si nécessaire
+        if (!$this->has('module_id') || empty($this->input('module_id'))) {
+            $nomModule = $this->input('module');
+            if ($nomModule) {
+                $module = \App\Models\Module::where('nom', trim($nomModule))->first();
+                if ($module) {
+                    $this->merge(['module_id' => $module->id]);
+                }
+            }
+        }
+
+        // 3. Résolution de l'année académique depuis l'année texte si nécessaire
+        if (!$this->has('annee_academique_id') || empty($this->input('annee_academique_id'))) {
+            $texteAnnee = $this->input('annee');
+            if ($texteAnnee) {
+                $anneeObj = \App\Models\AnneeAcademique::where('annee', trim($texteAnnee))
+                    ->orWhere('annee', str_replace(' ', '', trim($texteAnnee)))
+                    ->first();
+                if ($anneeObj) {
+                    $this->merge(['annee_academique_id' => $anneeObj->id]);
+                }
+            }
+
+            // Si toujours pas trouvé, on prend l'année active par défaut
+            if (!$this->has('annee_academique_id') || empty($this->input('annee_academique_id'))) {
+                $anneeActive = \App\Models\AnneeAcademique::where('active', true)->first()
+                    ?? \App\Models\AnneeAcademique::first();
+                if ($anneeActive) {
+                    $this->merge(['annee_academique_id' => $anneeActive->id]);
+                }
+            }
+        }
+    }
+
+    /**
      * Règles de validation pour l'upload d'une archive.
      */
     public function rules(): array

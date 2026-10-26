@@ -78,7 +78,7 @@ class DatabaseSeeder extends Seeder
         );
 
         // ---------------------------------------------------------------------
-        // 4. MODULES CORRESPONDANT AU FRONTEND ANGULAR
+        // 4. MODULES OFFICIELS DU BINÔME (Exactement les 9 modules initiaux)
         // ---------------------------------------------------------------------
         Module::firstOrCreate(['code' => 'GI101'], [
             'nom' => 'Mathématiques appliquées',
